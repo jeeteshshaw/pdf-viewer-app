@@ -1,4 +1,4 @@
-package com.vehicleservice
+package com.shyam.pdf.viewer.reader
 
 import android.app.Application
 import com.facebook.react.PackageList
