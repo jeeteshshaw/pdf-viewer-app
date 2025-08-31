@@ -119,6 +119,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: "#1a1a1a"
+
   },
   historyItem: {
     paddingVertical: 10,
@@ -127,21 +129,28 @@ const styles = StyleSheet.create({
   },
   historyText: {
     fontSize: 16,
+    color: "#1a1a1a"
+
   },
   emptyState: {
     flex: 1,
     marginTop: 50,
     justifyContent: 'center',
     alignItems: 'center',
+    color: "#1a1a1a"
+
   },
   emptyEmoji: {
     fontSize: 64,
     marginBottom: 16,
+    color: "#1a1a1a"
   },
   emptyText: {
     fontSize: 20,
     fontWeight: '600',
     marginBottom: 8,
+    color: "#1a1a1a"
+
   },
   emptySubText: {
     fontSize: 16,

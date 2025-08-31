@@ -1,103 +1,12 @@
-// // /**
-// //  * Sample React Native App
-// //  * https://github.com/facebook/react-native
-// //  *
-// //  * @format
-// //  */
 
-// // import React from 'react';
-// // import { StatusBar, StyleSheet, useColorScheme } from 'react-native';
-// // import { NavigationContainer } from '@react-navigation/native';
-// // import { createNativeStackNavigator } from '@react-navigation/native-stack';
-// // import { SafeAreaProvider } from 'react-native-safe-area-context';
-// // import Home from './src/screens/home';
-// // import Appointment from './src/screens/appointment';
-// // import IssueSelection from './src/screens/issueSelection';
-// // import StoreSelect from './src/screens/storeSelect';
-// // import Search from './src/screens/search';
-// // import OffersList from './src/screens/offerList';
-// // import PaymentScreen from './src/screens/paymentScreen';
-// // import PaymentStatus from './src/screens/paymentStatus';
-// // import Orders from './src/screens/orders';
-
-// // const Stack = createNativeStackNavigator();
-
-// // // Temporary placeholder screens
-// // // const HomeScreen = () => null;
-// // const ProfileScreen = () => null;
-
-// // function App() {
-// //   const isDarkMode = useColorScheme() === 'dark';
-
-// //   return (
-// //     <SafeAreaProvider>
-// //       <NavigationContainer>
-// //         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-// //         <Stack.Navigator screenOptions={{ headerShown: false }}>
-// //           <Stack.Screen name="Home" component={Home} />
-// //           <Stack.Screen name="Appointment" component={Appointment} />
-// //           <Stack.Screen name="StoreSelect" component={StoreSelect} />
-// //           <Stack.Screen name="IssueSelection" component={IssueSelection} />
-// //           <Stack.Screen name="Search" component={Search} />
-// //           <Stack.Screen name="OfferList" component={OffersList} />
-// //           <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
-// //           <Stack.Screen name="PaymentStatus" component={PaymentStatus} />
-// //           <Stack.Screen name="Orders" component={Orders} />
-// //         </Stack.Navigator>
-// //       </NavigationContainer>
-// //     </SafeAreaProvider>
-// //   );
-// // }
-
-// // const styles = StyleSheet.create({
-// //   container: {
-// //     flex: 1,
-// //   },
-// // });
-
-// // // export default App;
-
-
-// // import { StyleSheet, Text, View } from 'react-native'
-// // import React from 'react'
-// // import { PermissionsAndroid, Platform } from 'react-native';
-
-// // const App = () => {
-
-// //   const requestStoragePermission = async () => {
-// //     if (Platform.OS === 'android') {
-// //       const granted = await PermissionsAndroid.request(
-// //         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-// //         {
-// //           title: 'Storage Permission Required',
-// //           message: 'App needs access to your storage to read PDFs',
-// //           buttonNeutral: 'Ask Me Later',
-// //           buttonNegative: 'Cancel',
-// //           buttonPositive: 'OK',
-// //         },
-// //       );
-// //       return granted === PermissionsAndroid.RESULTS.GRANTED;
-// //     }
-// //     return true;
-// //   };
-
-// //   return (
-// //     <View>
-// //       <Text>App</Text>
-// //     </View>
-// //   )
-// // }
-
-// // export default App
-
-// // const styles = StyleSheet.create({})
 import React, { useEffect } from 'react';
 import { Linking, Platform, PermissionsAndroid } from 'react-native';
-import { createNavigationContainerRef, NavigationContainer } from '@react-navigation/native';
+import { createNavigationContainerRef, NavigationContainer, StackActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SelectPdfScreen from './src/screens/temp/SelectPdfScreen';
 import ViewPdfScreen from './src/screens/temp/ViewPdfScreen';
-import { keepLocalCopy } from '@react-native-documents/picker';
+import Splash from './src/screens/temp/Splash';
+import RNFS from 'react-native-fs';
 
 const Stack = createNativeStackNavigator();
 export const navigationRef = createNavigationContainerRef();
@@ -149,24 +58,32 @@ const App = () => {
       console.log('[Linking] Opening URI:', uri);
 
       const name = Date.now().toString() + '.pdf';
-      const [copyResult] = await keepLocalCopy({
-        files: [{ uri: uri, fileName: name }],
-        destination: 'cachesDirectory',
-      });
+      const destPath = `${RNFS.CachesDirectoryPath}/${name}`;
 
-      const localUri = copyResult.localUri;
+      await RNFS.copyFile(uri, destPath);
+      console.log('File copied to cache:', destPath);
 
-      if (!localUri) throw new Error('Failed to copy file locally');
-
-      const pdfItem = { uri: localUri, name };
-
-      navigationRef.current?.navigate('ViewPdf', {
-        uri: localUri,
+      navigationRef.current?.dispatch(StackActions.push('ViewPdf', {
+        uri: `file://${destPath}`,
         name,
         saveToRecent: false,
-      });
-    } catch (error) {
+      }));
+      // const localUri = copyResult.localUri;
 
+      // console.log('Local URI after copy:', localUri);
+
+      // if (!localUri) throw new Error('Failed to copy file locally');
+
+      // const pdfItem = { uri: localUri, name };
+      // console.log('Navigating to ViewPdf with:', pdfItem);
+
+      // navigationRef.current?.dispatch(StackActions.push('ViewPdf', {
+      //   uri: localUri,
+      //   name,
+      //   saveToRecent: false,
+      // }));
+    } catch (error) {
+      console.error('Error handling opened URL:', error);
     }
   };
 
@@ -178,11 +95,20 @@ const App = () => {
       }}
     >
       <Stack.Navigator initialRouteName="SelectPdf">
-        <Stack.Screen name="SelectPdf" component={SelectPdfScreen} />
-        <Stack.Screen name="ViewPdf" component={ViewPdfScreen} />
+        <Stack.Screen name="SelectPdf" component={SelectPdfScreen} options={{
+          title: "Welcome to PDF Viewer",
+          headerTitleAlign: 'center',
+        }} />
+        <Stack.Screen name="ViewPdf" component={ViewPdfScreen} options={{
+          title: "View PDF",
+          headerTitleAlign: 'center',
+        }} />
       </Stack.Navigator>
+      <Splash />
     </NavigationContainer>
   );
 };
 
 export default App;
+
+

@@ -33,7 +33,8 @@ const ViewPdfScreen = ({ route }) => {
                         secureTextEntry
                         value={password}
                         onChangeText={setPassword}
-                        style={{ borderWidth: 1, marginBottom: 10, padding: 8 }}
+                        placeholderTextColor={'#888'}
+                        style={{ borderWidth: 1, marginBottom: 10, fontSize: 14, color: '#000', borderRadius: 4, backgroundColor: "#fff", borderColor: "#d3d3d3", paddingVertical: 8, paddingHorizontal: 16 }}
                     />
                     <Button title="Unlock PDF" onPress={onPasswordSubmit} />
                 </View>
