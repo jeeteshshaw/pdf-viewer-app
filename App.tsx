@@ -7,9 +7,29 @@ import SelectPdfScreen from './src/screens/temp/SelectPdfScreen';
 import ViewPdfScreen from './src/screens/temp/ViewPdfScreen';
 import Splash from './src/screens/temp/Splash';
 import RNFS from 'react-native-fs';
+import WebView from './src/screens/temp/WebView';
+import EditorScreen from './src/screens/temp/EditorScreen';
+import MergePdfScreen from './src/screens/temp/MergePDF';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import PDFGenerator from './src/screens/temp/PDFGenerator';
+import SuccessScreen from './src/screens/temp/SuccessScreen';
+import MenuGridScreen from './src/screens/temp/MenuGridScreen';
+import SettingsScreen from './src/screens/temp/SettingsScreen';
+import UpdateChecker from './src/screens/temp/Update';
 
 const Stack = createNativeStackNavigator();
 export const navigationRef = createNavigationContainerRef();
+
+export const ScreenList = {
+  MenuGridScreen: "MenuGridScreen",
+  SettingsScreen: "SettingsScreen",
+  PDFMerge: "PDFMerge",
+  PDFGenerator: "PDFGenerator",
+  SuccessScreen: "SuccessScreen",
+  SelectPdf: "SelectPdf",
+  ViewPdf: "ViewPdf",
+  PdfEditor: "PdfEditor",
+}
 
 const App = () => {
   const requestStoragePermission = async () => {
@@ -88,24 +108,52 @@ const App = () => {
   };
 
   return (
-    <NavigationContainer
-      ref={navigationRef}
-      onReady={() => {
-        handleInitialURL();
-      }}
-    >
-      <Stack.Navigator initialRouteName="SelectPdf">
-        <Stack.Screen name="SelectPdf" component={SelectPdfScreen} options={{
-          title: "Welcome to PDF Viewer",
-          headerTitleAlign: 'center',
-        }} />
-        <Stack.Screen name="ViewPdf" component={ViewPdfScreen} options={{
-          title: "View PDF",
-          headerTitleAlign: 'center',
-        }} />
-      </Stack.Navigator>
-      <Splash />
-    </NavigationContainer>
+    <GestureHandlerRootView>
+      <NavigationContainer
+        ref={navigationRef}
+        onReady={() => {
+          handleInitialURL();
+        }}
+      >
+        <Stack.Navigator initialRouteName="MenuGridScreen">
+
+          <Stack.Screen name={ScreenList.MenuGridScreen} component={MenuGridScreen} options={{
+            title: "Home",
+            headerTitleAlign: 'center',
+          }} />
+          <Stack.Screen name={ScreenList.SettingsScreen} component={SettingsScreen} options={{
+            title: "Settings",
+            headerTitleAlign: 'center',
+          }} />
+          <Stack.Screen name={ScreenList.PDFMerge} component={MergePdfScreen} options={{
+            title: "Merge PDF",
+            headerTitleAlign: 'center',
+          }} />
+          <Stack.Screen name={ScreenList.PDFGenerator} component={PDFGenerator} options={{
+            title: "Image to PDF Generator",
+            headerTitleAlign: 'center',
+          }} />
+          <Stack.Screen name={ScreenList.SuccessScreen} component={SuccessScreen} options={{
+            title: "Success",
+            headerTitleAlign: 'center',
+          }} />
+          <Stack.Screen name={ScreenList.SelectPdf} component={SelectPdfScreen} options={{
+            title: "Welcome to PDF Viewer",
+            headerTitleAlign: 'center',
+          }} />
+          <Stack.Screen name={ScreenList.ViewPdf} component={ViewPdfScreen} options={{
+            title: "View PDF",
+            headerTitleAlign: 'center',
+          }} />
+          <Stack.Screen name={ScreenList.PdfEditor} component={EditorScreen} options={{
+            title: "PDF Editor",
+            headerTitleAlign: 'center',
+          }} />
+        </Stack.Navigator>
+        <Splash />
+        <UpdateChecker />
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Alert } from 'react-native';
 import Pdf from 'react-native-pdf';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ViewPdfScreen = ({ route }) => {
     const { uri } = route.params;
@@ -25,7 +26,7 @@ const ViewPdfScreen = ({ route }) => {
     };
 
     return (
-        <View style={{ flex: 1 }}>
+        <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
             {needsPassword ? (
                 <View style={{ padding: 20 }}>
                     <TextInput
@@ -47,7 +48,7 @@ const ViewPdfScreen = ({ route }) => {
                     style={{ flex: 1 }}
                 />
             )}
-        </View>
+        </SafeAreaView>
     );
 };
 
