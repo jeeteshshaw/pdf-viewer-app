@@ -42,11 +42,7 @@ export default function UpdateChecker() {
     };
 
     if (loading) {
-        return (
-            <View style={styles.centered}>
-                <ActivityIndicator size="large" />
-            </View>
-        );
+        return null;
     }
 
     return (

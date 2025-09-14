@@ -5,6 +5,7 @@ import * as DocumentPicker from "@react-native-documents/picker";
 import { PDFDocument } from "pdf-lib";
 import RNFS from "react-native-fs";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { navigationRef } from "../../../App";
 
 interface ImageItem {
     uri: string;
@@ -90,7 +91,8 @@ export default function ImagesToPdfScreen() {
             const outPath = `${RNFS.DownloadDirectoryPath}/pdf_viewer_${Date.now()}_image_merge.pdf`;
             await RNFS.writeFile(outPath, pdfBase64, "base64");
 
-            Alert.alert("Success", `PDF created at:\n${outPath}`);
+            // Alert.alert("Success", `PDF created at:\n${outPath}`);
+            navigationRef.current?.navigate("SuccessScreen", { filePath: outPath });
             console.log("PDF created at:", outPath);
         } catch (e) {
             console.error("mergeImagesToPdf error:", e);

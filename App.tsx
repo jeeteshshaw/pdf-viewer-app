@@ -16,6 +16,7 @@ import SuccessScreen from './src/screens/temp/SuccessScreen';
 import MenuGridScreen from './src/screens/temp/MenuGridScreen';
 import SettingsScreen from './src/screens/temp/SettingsScreen';
 import UpdateChecker from './src/screens/temp/Update';
+import WatermarkScreen from './src/screens/temp/WatermarkScreen';
 
 const Stack = createNativeStackNavigator();
 export const navigationRef = createNavigationContainerRef();
@@ -29,6 +30,7 @@ export const ScreenList = {
   SelectPdf: "SelectPdf",
   ViewPdf: "ViewPdf",
   PdfEditor: "PdfEditor",
+  WatermarkScreen: "WatermarkScreen",
 }
 
 const App = () => {
@@ -117,6 +119,10 @@ const App = () => {
       >
         <Stack.Navigator initialRouteName="MenuGridScreen">
 
+          <Stack.Screen name={ScreenList.WatermarkScreen} component={WatermarkScreen} options={{
+            title: "Watermark",
+            headerTitleAlign: 'center',
+          }} />
           <Stack.Screen name={ScreenList.MenuGridScreen} component={MenuGridScreen} options={{
             title: "Home",
             headerTitleAlign: 'center',

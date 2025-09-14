@@ -17,10 +17,14 @@ interface SuccessScreenProps {
 }
 
 export default function SuccessScreen({ route, navigation }: any) {
-    const { filePath } = route.params;
+    const { filePath = "" } = route?.params ?? {};
 
     const openPdf = async () => {
         try {
+            if (!filePath) {
+                Alert.alert("Error", "File path is missing");
+                return;
+            }
             const uri = Platform.OS === "android" ? `file://${filePath}` : filePath;
             const exists = await RNFS.exists(filePath);
             if (!exists) {
@@ -36,12 +40,12 @@ export default function SuccessScreen({ route, navigation }: any) {
     };
 
     return (
-        <SafeAreaView edges={['bottom']} style={styles.container}>
+        <SafeAreaView edges={['bottom']} style={{ flex: 1 }}>
             <LinearGradient colors={["#4facfe", "#00f2fe"]} style={styles.container}>
                 <View style={styles.card}>
                     <Text style={styles.checkMark}>✓</Text>
                     <Text style={styles.title}>PDF Created Successfully!</Text>
-                    <Text style={styles.path}>{filePath}</Text>
+                    <Text style={styles.path}>{filePath ?? ""}</Text>
 
                     <TouchableOpacity style={styles.btn} onPress={openPdf}>
                         <Text style={styles.btnText}>Open PDF</Text>
@@ -63,6 +67,7 @@ const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: "center", alignItems: "center" },
     card: {
         width: "90%",
+
         padding: 30,
         borderRadius: 20,
         backgroundColor: "#fff",

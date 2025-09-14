@@ -24,7 +24,8 @@ export default function MenuGridScreen() {
         { key: "2", title: "Merge PDFs", iconName: "picture-as-pdf", onPress: () => navigation.navigate(ScreenList.PDFMerge as never) },
         { key: "3", title: "Images to PDF", iconName: "image", onPress: () => navigation.navigate(ScreenList.PDFGenerator as never) },
         { key: "4", title: "PDF Editor(Beta)", iconName: "edit-document", onPress: () => navigation.navigate(ScreenList.PdfEditor as never) },
-        { key: "5", title: "Settings", iconName: "settings", onPress: () => navigation.navigate(ScreenList.SettingsScreen as never) },
+        { key: "5", title: "Watermark (Beta)", iconName: "branding-watermark", onPress: () => navigation.navigate(ScreenList.WatermarkScreen as never) },
+        { key: "6", title: "Settings", iconName: "settings", onPress: () => navigation.navigate(ScreenList.SettingsScreen as never) },
     ];
     const renderItem = ({ item }: { item: MenuItem }) => (
         <TouchableOpacity style={styles.item} onPress={item.onPress} activeOpacity={0.7}>
