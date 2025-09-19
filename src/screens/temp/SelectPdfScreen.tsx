@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navigationRef } from '../../../App';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { logEvent } from '../../utils/logger';
 
 const HISTORY_KEY = 'PDF_HISTORY';
 
@@ -24,12 +25,15 @@ const SelectPdfScreen = () => {
   }, []);
 
   const loadHistory = async () => {
+    logEvent("home_select_pdf_tapped", { screen: "SelectPdf", action: "load_history" });
     try {
       const saved = await AsyncStorage.getItem(HISTORY_KEY);
       if (saved) {
         setHistory(JSON.parse(saved));
       }
     } catch (e) {
+      logEvent("home_select_pdf_tapped_error", { screen: "SelectPdf", action: "load_history", error: e?.toString() ?? "error" });
+
       console.warn('Failed to load history:', e);
     }
   };
@@ -45,6 +49,7 @@ const SelectPdfScreen = () => {
   };
 
   const selectPdf = async () => {
+    logEvent("home_select_pdf_tapped", { screen: "SelectPdf", action: "select_pdf" });
     try {
       const res = await pick({ type: [types.pdf] });
 
@@ -67,7 +72,9 @@ const SelectPdfScreen = () => {
       await saveToHistory(item);
 
       navigationRef.current?.navigate('ViewPdf', pdfItem);
-    } catch (err) {
+    } catch (err: any) {
+      logEvent("home_select_pdf_tapped_error", { screen: "SelectPdf", action: "select_pdf", error: err?.message?.toString() ?? "error" });
+
       if (err?.message?.includes('User canceled')) return;
       Alert.alert('Error', 'Could not open or process the selected PDF.');
     }
@@ -75,6 +82,8 @@ const SelectPdfScreen = () => {
 
   const openFromHistory = async (item) => {
     // alert(item.uri);
+    logEvent("home_select_pdf_tapped", { screen: "SelectPdf", action: "open_from_history" });
+
     const [copyResult] = await keepLocalCopy({
       files: [{ uri: item?.uri, fileName: item?.name }],
       destination: 'cachesDirectory',

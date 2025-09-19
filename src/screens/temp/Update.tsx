@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet, Linking, ActivityIndicator, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
+import { logEvent } from '../../utils/logger';
 
 const CURRENT_VERSION = DeviceInfo.getVersion() // Your app's current version
 const UPDATE_INFO_URL = 'https://raw.githubusercontent.com/jeeteshshaw/audio-book-data/refs/heads/main/pdf_viewer-version.json';
@@ -22,6 +23,7 @@ export default function UpdateChecker() {
                 if (isVersionNewer(version?.versionCode, CURRENT_VERSION)) {
                     version && setUpdateInfo(version);
                     setModalVisible(true);
+                    logEvent("home_update_check", { screen: "Update", action: "show_update", version: version?.versionCode });
                 }
             } catch (error) {
                 console.warn('Update check failed:', error);
@@ -39,6 +41,7 @@ export default function UpdateChecker() {
             Linking.openURL(updateInfo.storeUrl);
         }
         setModalVisible(false);
+        logEvent("home_update_check", { screen: "Update", action: "press_update", version: updateInfo?.versionCode });
     };
 
     if (loading) {

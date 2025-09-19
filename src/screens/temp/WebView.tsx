@@ -4,7 +4,6 @@ import NativeWebView from 'react-native-webview'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import RNFS from 'react-native-fs'
 const url = "https://jeeteshshaw.github.io/pdf-editor-web/"
-// const url = "http://192.168.1.2:5501/ "
 
 const WebView = () => {
     return (

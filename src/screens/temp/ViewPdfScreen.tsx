@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Alert } from 'react-native';
 import Pdf from 'react-native-pdf';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { logEvent } from '../../utils/logger';
 
 const ViewPdfScreen = ({ route }) => {
     const { uri } = route.params;
@@ -10,6 +11,7 @@ const ViewPdfScreen = ({ route }) => {
 
     const onLoadComplete = (numberOfPages, filePath) => {
         // PDF loaded successfully
+        logEvent("home_view_pdf_tapped", { screen: "ViewPdf", action: "load_pdf" });
     };
 
     const onError = (error) => {
@@ -23,6 +25,7 @@ const ViewPdfScreen = ({ route }) => {
     const onPasswordSubmit = () => {
         // Just update state to re-render Pdf component with password
         setNeedsPassword(false);
+        logEvent("home_view_pdf_tapped", { screen: "ViewPdf", action: "submit_password" });
     };
 
     return (

@@ -1,5 +1,6 @@
-// import analytics from '@react-native-firebase/analytics';
+import analytics from '@react-native-firebase/analytics';
 
-// export const logEvent = (eventName: string, params?: any) => {
-//     analytics().logEvent(eventName, params);
-// };
+export const logEvent = (eventName: string, params?: any) => {
+    analytics().logEvent(eventName, params);
+
+};

@@ -6,6 +6,7 @@ import { PDFDocument } from "pdf-lib";
 import RNFS from "react-native-fs";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { navigationRef } from "../../../App";
+import { logEvent } from "../../utils/logger";
 
 interface ImageItem {
     uri: string;
@@ -29,6 +30,8 @@ export default function ImagesToPdfScreen() {
     const [images, setImages] = useState<ImageItem[]>([]);
 
     const pickImages = async () => {
+        logEvent("home_images_to_pdf_tapped", { screen: "ImagesToPdf", action: "pick_images" });
+
         try {
             const results = await DocumentPicker.pick({
                 allowMultiSelection: true,
@@ -47,6 +50,8 @@ export default function ImagesToPdfScreen() {
 
             setImages((prev) => [...prev, ...mapped]);
         } catch (err: any) {
+            logEvent("home_images_to_pdf_tapped_error", { screen: "ImagesToPdf", action: "pick_images", error: err?.message?.toString() ?? "error" });
+
             Alert.alert("Error", err.message);
         }
     };
@@ -57,7 +62,10 @@ export default function ImagesToPdfScreen() {
 
     const mergeImagesToPdf = async () => {
         if (images.length === 0) {
+            logEvent("home_images_to_pdf_tapped_error", { screen: "ImagesToPdf", action: "pick_images", error: "Pick at least one image" });
+
             Alert.alert("Pick at least one image");
+
             return;
         }
 
@@ -95,6 +103,8 @@ export default function ImagesToPdfScreen() {
             navigationRef.current?.navigate("SuccessScreen", { filePath: outPath });
             console.log("PDF created at:", outPath);
         } catch (e) {
+            logEvent("home_images_to_pdf_tapped_error", { screen: "ImagesToPdf", action: "pick_images", error: e?.toString() ?? "error" });
+
             console.error("mergeImagesToPdf error:", e);
             Alert.alert("Error", "Failed to create PDF");
         }

@@ -6,6 +6,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { navigationRef } from "../../../App";
 import { StackActions } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { logEvent } from "../../utils/logger";
 
 interface SuccessScreenProps {
     route: {
@@ -20,6 +21,8 @@ export default function SuccessScreen({ route, navigation }: any) {
     const { filePath = "" } = route?.params ?? {};
 
     const openPdf = async () => {
+        logEvent("home_success_tapped", { screen: "Success", action: "open_pdf" });
+
         try {
             if (!filePath) {
                 Alert.alert("Error", "File path is missing");
@@ -53,7 +56,10 @@ export default function SuccessScreen({ route, navigation }: any) {
 
                     <TouchableOpacity
                         style={[styles.btn, { backgroundColor: "#888" }]}
-                        onPress={() => navigation.goBack()}
+                        onPress={() => {
+                            logEvent("home_success_tapped", { screen: "Success", action: "back" });
+                            navigation.goBack();
+                        }}
                     >
                         <Text style={styles.btnText}>Back</Text>
                     </TouchableOpacity>

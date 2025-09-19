@@ -18,7 +18,7 @@ import { degrees, PDFDocument, popGraphicsState, pushGraphicsState, rgb, rotateD
 import Slider from "@react-native-community/slider";
 import { Buffer } from "buffer";
 import { navigationRef } from "../../../App";
-
+import { logEvent } from "../../utils/logger";
 type ColorKey = "red" | "blue" | "black" | "gray";
 
 const presetTexts = ["CONFIDENTIAL", "DRAFT", "TOP SECRET"];
@@ -26,7 +26,7 @@ const presetTexts = ["CONFIDENTIAL", "DRAFT", "TOP SECRET"];
 export default function WatermarkScreen() {
     // common
     const [pdfPath, setPdfPath] = useState<string | null>(null);
-
+    const [pdfName, setPdfName] = useState<string | null>(null);
     // watermark type: Text or Image (clip-to-select)
     const [watermarkType, setWatermarkType] = useState<"text" | "image">("text");
 
@@ -48,10 +48,14 @@ export default function WatermarkScreen() {
 
     // pick PDF
     const pickPdf = async () => {
+        logEvent("home_watermark_tapped", { screen: "Watermark", action: "pick_pdf" });
         try {
             const [res] = await DocumentPicker.pick({ type: [DocumentPicker.types.pdf] });
             setPdfPath(res.uri);
+            setPdfName(res.name);
+
         } catch (err: any) {
+            logEvent("home_watermark_tapped_error", { screen: "Watermark", action: "pick_pdf_error", error: err?.message?.toString() ?? "error" });
             // if (!DocumentPicker.isCancel(err))
             Alert.alert("Error", err.message);
         }
@@ -59,6 +63,7 @@ export default function WatermarkScreen() {
 
     // pick image for watermark (copy to app dir then use)
     const pickImage = async () => {
+        logEvent("home_watermark_tapped", { screen: "Watermark", action: "pick_image" });
         try {
             const [res] = await DocumentPicker.pick({ type: [DocumentPicker.types.images] });
             const ext = res.name?.split(".").pop() || "jpg";
@@ -66,6 +71,7 @@ export default function WatermarkScreen() {
             await RNFS.copyFile(res.uri, dest);
             setImagePath(dest);
         } catch (err: any) {
+            logEvent("home_watermark_tapped_error", { screen: "Watermark", action: "pick_image_error", error: err?.message?.toString() ?? "error" });
             // if (!DocumentPicker.isCancel(err)) 
             Alert.alert("Error", err.message);
         }
@@ -76,16 +82,20 @@ export default function WatermarkScreen() {
 
     // Apply watermark (text or image)
     const applyWatermark = async () => {
+        logEvent("home_watermark_tapped", { screen: "Watermark", action: "apply_watermark", type: styleType, repeatOrientation, watermarkType });
         if (!pdfPath) {
             Alert.alert("Select a PDF first");
+            logEvent("home_watermark_tapped_error", { screen: "Watermark", action: "apply_watermark_error", error: "Select a PDF first" });
             return;
         }
         if (watermarkType === "text" && !watermarkText.trim()) {
             Alert.alert("Enter watermark text or pick a preset");
+            logEvent("home_watermark_tapped_error", { screen: "Watermark", action: "apply_watermark_error", error: "Enter watermark text or pick a preset" });
             return;
         }
         if (watermarkType === "image" && !imagePath) {
             Alert.alert("Pick an image for watermark");
+            logEvent("home_watermark_tapped_error", { screen: "Watermark", action: "apply_watermark_error", error: "Pick an image for watermark" });
             return;
         }
 
@@ -270,14 +280,20 @@ export default function WatermarkScreen() {
             <View style={styles.row}>
                 <TouchableOpacity
                     style={[styles.typeBtn, watermarkType === "text" && styles.typeBtnActive]}
-                    onPress={() => setWatermarkType("text")}
+                    onPress={() => {
+                        setWatermarkType("text");
+                        logEvent("home_watermark_tapped", { screen: "Watermark", action: "change_watermark_type", type: "text" });
+                    }}
                 >
                     <Text style={{ color: watermarkType === "text" ? "#fff" : "#000" }}>Text</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.typeBtn, watermarkType === "image" && styles.typeBtnActive]}
-                    onPress={() => setWatermarkType("image")}
+                    onPress={() => {
+                        setWatermarkType("image");
+                        logEvent("home_watermark_tapped", { screen: "Watermark", action: "change_watermark_type", type: "image" });
+                    }}
                 >
                     <Text style={{ color: watermarkType === "image" ? "#fff" : "#000" }}>Image</Text>
                 </TouchableOpacity>
@@ -287,7 +303,7 @@ export default function WatermarkScreen() {
             <TouchableOpacity style={styles.button} onPress={pickPdf}>
                 <Text style={styles.buttonText}>{pdfPath ? "Change PDF" : "Select PDF"}</Text>
             </TouchableOpacity>
-            {pdfPath ? <Text style={styles.path}>Selected PDF: {pdfPath}</Text> : null}
+            {pdfPath ? <Text style={styles.path}>Selected PDF: {pdfName}</Text> : null}
 
             {/* TEXT options */}
             {watermarkType === "text" ? (
@@ -304,7 +320,10 @@ export default function WatermarkScreen() {
                             <TouchableOpacity
                                 key={t}
                                 style={[styles.chip, watermarkText === t && styles.chipSelected]}
-                                onPress={() => setWatermarkText(t)}
+                                onPress={() => {
+                                    setWatermarkText(t);
+                                    logEvent("home_watermark_tapped", { screen: "Watermark", action: "change_watermark_text", text: t });
+                                }}
                             >
                                 <Text style={{ color: watermarkText === t ? "#fff" : "#000" }}>{t}</Text>
                             </TouchableOpacity>
@@ -321,7 +340,10 @@ export default function WatermarkScreen() {
                                     { backgroundColor: c === "black" ? "#000" : c },
                                     color === c && styles.colorSelected,
                                 ]}
-                                onPress={() => setColor(c)}
+                                onPress={() => {
+                                    setColor(c);
+                                    logEvent("home_watermark_tapped", { screen: "Watermark", action: "change_watermark_color", color: c });
+                                }}
                             />
                         ))}
                     </View>
@@ -333,12 +355,18 @@ export default function WatermarkScreen() {
                         maximumValue={150}
                         step={2}
                         value={fontSize}
-                        onValueChange={setFontSize}
+                        onValueChange={(value) => {
+                            setFontSize(value);
+                            logEvent("home_watermark_tapped", { screen: "Watermark", action: "change_watermark_font_size", fontSize: value });
+                        }}
                     />
 
                     <View style={styles.switchRow}>
                         <Text style={styles.label}>Bold</Text>
-                        <Switch value={bold} onValueChange={setBold} />
+                        <Switch value={bold} onValueChange={(value) => {
+                            setBold(value);
+                            logEvent("home_watermark_tapped", { screen: "Watermark", action: "change_watermark_bold", bold: value });
+                        }} />
                     </View>
                 </>
             ) : (
@@ -365,7 +393,10 @@ export default function WatermarkScreen() {
                         maximumValue={0.9}
                         step={0.01}
                         value={imageScale}
-                        onValueChange={setImageScale}
+                        onValueChange={(value) => {
+                            setImageScale(value);
+                            logEvent("home_watermark_tapped", { screen: "Watermark", action: "change_watermark_image_scale", imageScale: value });
+                        }}
                     />
 
                     <Text style={styles.label}>Opacity: {Math.round(imageOpacity * 100)}%</Text>
@@ -375,7 +406,10 @@ export default function WatermarkScreen() {
                         maximumValue={1.0}
                         step={0.01}
                         value={imageOpacity}
-                        onValueChange={setImageOpacity}
+                        onValueChange={(value) => {
+                            setImageOpacity(value);
+                            logEvent("home_watermark_tapped", { screen: "Watermark", action: "change_watermark_image_opacity", imageOpacity: value });
+                        }}
                     />
                 </>
             )}
@@ -401,13 +435,19 @@ export default function WatermarkScreen() {
                     <View style={styles.chipRow}>
                         <TouchableOpacity
                             style={[styles.chip, repeatOrientation === "diagonal" && styles.chipSelected]}
-                            onPress={() => setRepeatOrientation("diagonal")}
+                            onPress={() => {
+                                setRepeatOrientation("diagonal");
+                                logEvent("home_watermark_tapped", { screen: "Watermark", action: "change_watermark_repeat_orientation", repeatOrientation: "diagonal" });
+                            }}
                         >
                             <Text style={{ color: repeatOrientation === "diagonal" ? "#fff" : "#000" }}>DIAGONAL</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.chip, repeatOrientation === "normal" && styles.chipSelected]}
-                            onPress={() => setRepeatOrientation("normal")}
+                            onPress={() => {
+                                setRepeatOrientation("normal");
+                                logEvent("home_watermark_tapped", { screen: "Watermark", action: "change_watermark_repeat_orientation", repeatOrientation: "normal" });
+                            }}
                         >
                             <Text style={{ color: repeatOrientation === "normal" ? "#fff" : "#000" }}>NORMAL</Text>
                         </TouchableOpacity>

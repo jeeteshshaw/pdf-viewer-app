@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions } from "
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { ScreenList } from "../../../App";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { logEvent } from "../../utils/logger";
 
 interface MenuItem {
     key: string;
@@ -28,7 +29,10 @@ export default function MenuGridScreen() {
         { key: "6", title: "Settings", iconName: "settings", onPress: () => navigation.navigate(ScreenList.SettingsScreen as never) },
     ];
     const renderItem = ({ item }: { item: MenuItem }) => (
-        <TouchableOpacity style={styles.item} onPress={item.onPress} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.item} onPress={() => {
+            logEvent("home_menu_item_tapped", { screen: "MenuGrid", itemKey: item.title });
+            item.onPress()
+        }} activeOpacity={0.7}>
             <MaterialIcons name={item.iconName} size={50} color="#4287f5" />
             <Text style={styles.title}>{item.title}</Text>
         </TouchableOpacity>

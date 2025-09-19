@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert, ScrollView } 
 import DeviceInfo from "react-native-device-info";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { logEvent } from "../../utils/logger";
 
 export default function SettingsScreen() {
     const appVersion = DeviceInfo.getVersion();
@@ -14,6 +15,8 @@ export default function SettingsScreen() {
     // const supportEmail = "mailto:support@yourapp.com";
 
     const openLink = async (url: string) => {
+        logEvent("home_settings_tapped", { screen: "Settings", action: "open_privacy_policy" });
+
         const supported = await Linking.canOpenURL(url);
         if (supported) {
             await Linking.openURL(url);

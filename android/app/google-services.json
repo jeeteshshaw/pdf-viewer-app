@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "706663877893",
+    "project_id": "pdf-viewer-e8385",
+    "storage_bucket": "pdf-viewer-e8385.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706663877893:android:c93e8790d7d0ed0d0ffb6c",
+        "android_client_info": {
+          "package_name": "com.shyam.pdf.viewer.reader"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcese9Hgz-EcHlW99BWGPLI0SpC0Bb2Ks"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

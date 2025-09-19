@@ -10,6 +10,7 @@ import { Buffer } from "buffer";
 import { navigationRef } from "../../../App";
 import { IMAGE_SIZE, NUM_COLUMNS } from "./PDFGenerator";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { logEvent } from "../../utils/logger";
 
 interface PdfItem {
     uri: string;
@@ -23,6 +24,8 @@ export default function MergePdfScreen() {
     // Pick PDFs using @react-native-documents/picker
     const pickPdfs = async () => {
         try {
+            logEvent("home_merge_pdf_tapped", { screen: "MergePDF", action: "pick_pdfs" });
+
             const results = await DocumentPicker.pick({
                 allowMultiSelection: true,
                 type: [DocumentPicker.types.pdf],
@@ -46,13 +49,18 @@ export default function MergePdfScreen() {
             setPdfs((prev) => [...prev, ...mapped]);
         } catch (err: any) {
             Alert.alert("Error", err.message);
+            logEvent("home_merge_pdf_tapped_error", { screen: "MergePDF", action: "pick_pdfs", error: err?.message?.toString() ?? "error" });
+
         }
     };
 
     // Merge PDFs using pdf-lib
     const mergePdfsData = async () => {
+        logEvent("home_merge_pdf_tapped", { screen: "MergePDF", action: "merge_pdfs" });
+
         if (pdfs.length < 2) {
             Alert.alert("Select at least 2 PDFs to merge");
+            logEvent("home_merge_pdf_tapped_error", { screen: "MergePDF", action: "merge_pdfs", error: "Select at least 2 PDFs to merge" });
             return;
         }
 
@@ -87,6 +95,8 @@ export default function MergePdfScreen() {
             navigationRef.current?.navigate("SuccessScreen", { filePath: outPath });
         } catch (e: any) {
             console.error(e);
+            logEvent("home_merge_pdf_tapped_error", { screen: "MergePDF", action: "pick_pdfs", error: e?.toString() ?? "error" });
+
             Alert.alert("Merge failed", String(e));
         }
     };

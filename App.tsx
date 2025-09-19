@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Linking, Platform, PermissionsAndroid } from 'react-native';
 import { createNavigationContainerRef, NavigationContainer, StackActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -17,6 +17,7 @@ import MenuGridScreen from './src/screens/temp/MenuGridScreen';
 import SettingsScreen from './src/screens/temp/SettingsScreen';
 import UpdateChecker from './src/screens/temp/Update';
 import WatermarkScreen from './src/screens/temp/WatermarkScreen';
+import analytics from '@react-native-firebase/analytics';
 
 const Stack = createNativeStackNavigator();
 export const navigationRef = createNavigationContainerRef();
@@ -34,6 +35,10 @@ export const ScreenList = {
 }
 
 const App = () => {
+  const routeNameRef = useRef<string>("");
+
+
+
   const requestStoragePermission = async () => {
     if (Platform.OS === 'android' && Platform.Version < 33) {
       const granted = await PermissionsAndroid.request(
@@ -72,7 +77,7 @@ const App = () => {
     }
   };
 
-  const handleOpenURL = async (uri) => {
+  const handleOpenURL = async (uri: string) => {
     if (!uri) return;
 
     try {
@@ -115,6 +120,20 @@ const App = () => {
         ref={navigationRef}
         onReady={() => {
           handleInitialURL();
+          routeNameRef.current = navigationRef.current?.getCurrentRoute()?.name ?? '';
+
+        }}
+        onStateChange={async () => {
+          const previousRouteName = routeNameRef.current;
+          const currentRouteName = navigationRef.current?.getCurrentRoute()?.name ?? '';
+
+          if (previousRouteName !== currentRouteName) {
+            await analytics().logScreenView({
+              screen_name: currentRouteName,
+              screen_class: currentRouteName,
+            });
+          }
+          routeNameRef.current = currentRouteName;
         }}
       >
         <Stack.Navigator initialRouteName="MenuGridScreen">
